@@ -1,7 +1,8 @@
 import torch
 import torch.nn as nn
 from mmcv.runner import load_checkpoint
-from torchvision.models.utils import load_state_dict_from_url
+# from torchvision.models.utils import load_state_dict_from_url
+from torch.hub import load_state_dict_from_url #adjustment necessary to work wiht colab
 
 
 __all__ = [

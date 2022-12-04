@@ -307,27 +307,27 @@ def main():
     args.distributed = num_gpus > 1
 
     if args.distributed:
-        torch.cuda.set_device(args.local_rank)
-        torch.distributed.init_process_group(
-            backend="nccl", init_method="env://"
-        )
-        # RANK = int(os.environ["RANK"])
-        # if 'CUDA_VISIBLE_DEVICES' in os.environ.keys():
-        #     NGPUS_PER_NODE = len(os.environ['CUDA_VISIBLE_DEVICES'].split(','))
-        # else:
-        #     NGPUS_PER_NODE = torch.cuda.device_count()
-        # assert NGPUS_PER_NODE > 0, "CUDA is not supported"
-        # GPU = RANK % NGPUS_PER_NODE
-        # torch.cuda.set_device(GPU)
-        # master_address = os.environ['MASTER_ADDR']
-        # master_port = int(os.environ['MASTER_PORT'])
-        # WORLD_SIZE = int(os.environ['WORLD_SIZE'])
-        # torch.distributed.init_process_group(backend='nccl',
-        #                                      init_method='tcp://{}:{}'.format(
-        #                                          master_address, master_port),
-        #                                      rank=RANK, world_size=WORLD_SIZE)
-        # NUM_GPUS = WORLD_SIZE
-        # print(f"RANK and WORLD_SIZE in environ: {RANK}/{WORLD_SIZE}")
+        # torch.cuda.set_device(args.local_rank)
+        # torch.distributed.init_process_group(
+        #     backend="nccl", init_method="env://"
+        # )
+        RANK = int(os.environ["RANK"])
+        if 'CUDA_VISIBLE_DEVICES' in os.environ.keys():
+            NGPUS_PER_NODE = len(os.environ['CUDA_VISIBLE_DEVICES'].split(','))
+        else:
+            NGPUS_PER_NODE = torch.cuda.device_count()
+        assert NGPUS_PER_NODE > 0, "CUDA is not supported"
+        GPU = RANK % NGPUS_PER_NODE
+        torch.cuda.set_device(GPU)
+        master_address = os.environ['MASTER_ADDR']
+        master_port = int(os.environ['MASTER_PORT'])
+        WORLD_SIZE = int(os.environ['WORLD_SIZE'])
+        torch.distributed.init_process_group(backend='gloo', #adjustment required to work with CUDA rank
+                                             init_method='tcp://{}:{}'.format(
+                                                 master_address, master_port),
+                                             rank=RANK, world_size=WORLD_SIZE)
+        NUM_GPUS = WORLD_SIZE
+        print(f"RANK and WORLD_SIZE in environ: {RANK}/{WORLD_SIZE}")
 
     cfg.merge_from_file(args.config_file)
     cfg.merge_from_list(args.opts)

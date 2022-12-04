@@ -5,7 +5,8 @@ from .synthia import synthiaDataSet
 from .gta5 import GTA5DataSet
 
 class DatasetCatalog(object):
-    DATASET_DIR = "datasets"
+    # DATASET_DIR = "datasets"
+    DATASET_DIR = "drive/out-of-distribution/"
     DATASETS = {
         "gta5_train": {
             "data_dir": "gta5",
